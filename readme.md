@@ -6,6 +6,8 @@ A cli tool to safely batch rename files.
 
 ## Install
 
+Goto the [relase page](https://github.com/ysmood/renamefiles/releases) and download the executable, or use golang:
+
 ```bash
 go get github.com/ysmood/renamefiles
 ```
