@@ -10,9 +10,9 @@ import (
 func TestBasic(t *testing.T) {
 	p := "tmp/" + kit.RandString(16)
 
-	kit.OutputFile(p+"/test-01-a.txt", "", nil)
-	kit.OutputFile(p+"/test-02-a.txt", "", nil)
-	kit.OutputFile(p+"/test-03-a.txt", "", nil)
+	_ = kit.OutputFile(p+"/test-01-a.txt", "", nil)
+	_ = kit.OutputFile(p+"/test-02-a.txt", "", nil)
+	_ = kit.OutputFile(p+"/test-03-a.txt", "", nil)
 
 	kit.Exec(
 		"go", "run", ".",
