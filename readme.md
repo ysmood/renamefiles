@@ -6,7 +6,9 @@ A cli tool to safely batch rename files.
 
 ## Install
 
-Goto the [relase page](https://github.com/ysmood/renamefiles/releases) and download the executable, or use golang:
+Shell command `curl -L https://git.io/fjaxx | repo=ysmood/renamefiles bin=renamefiles sh`
+
+or use golang:
 
 ```bash
 go get github.com/ysmood/renamefiles
