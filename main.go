@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"path/filepath"
 	"regexp"
+	"strconv"
 
 	kit "github.com/ysmood/gokit"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -63,6 +65,7 @@ func plan(match, regStr, template, prefix string) []task {
 	list := kit.Walk(match).MustList()
 	reg := regexp.MustCompile(regStr)
 	tasks := []task{}
+	padLen := int64(math.Ceil(math.Log10(float64(len(list)))))
 
 	for _, p := range list {
 		m := reg.FindStringSubmatch(p)
@@ -75,6 +78,9 @@ func plan(match, regStr, template, prefix string) []task {
 		if len(m) > 1 {
 			key = m[1]
 		}
+
+		index, _ := strconv.ParseInt(key, 10, 64)
+		key = fmt.Sprintf("%0"+strconv.FormatInt(padLen, 10)+"d", index)
 
 		to, _ := filepath.Abs(prefix + kit.S(template, "key", str(key), "ext", str(filepath.Ext(p))))
 

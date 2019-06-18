@@ -22,9 +22,9 @@ func TestBasic(t *testing.T) {
 		"-t"+p+"/ok-{{key}}.txt",
 	).MustDo()
 
-	assert.True(t, kit.FileExists(p+"/ok-01.txt"))
-	assert.True(t, kit.FileExists(p+"/ok-02.txt"))
-	assert.True(t, kit.FileExists(p+"/ok-03.txt"))
+	assert.True(t, kit.FileExists(p+"/ok-1.txt"))
+	assert.True(t, kit.FileExists(p+"/ok-2.txt"))
+	assert.True(t, kit.FileExists(p+"/ok-3.txt"))
 
 	kit.Exec(
 		"go", "run", ".",
