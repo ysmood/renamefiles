@@ -68,7 +68,7 @@ func plan(match, regStr, template, prefix string) []task {
 	padLen := int64(math.Ceil(math.Log10(float64(len(list)))))
 
 	for _, p := range list {
-		m := reg.FindStringSubmatch(p)
+		m := reg.FindStringSubmatch(filepath.Base(p))
 
 		if m == nil {
 			continue
