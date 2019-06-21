@@ -4,6 +4,6 @@ go 1.12
 
 require (
 	github.com/stretchr/testify v1.3.0
-	github.com/ysmood/gokit v0.10.4
+	github.com/ysmood/gokit v0.11.0
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
