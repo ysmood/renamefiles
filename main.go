@@ -62,7 +62,7 @@ type task struct {
 }
 
 func plan(match, regStr, template, prefix string) []task {
-	list := kit.Walk(match).MustList()
+	list := kit.Walk(match).Sort().MustList()
 	reg := regexp.MustCompile(regStr)
 	tasks := []task{}
 	padLen := int64(math.Ceil(math.Log10(float64(len(list)))))
