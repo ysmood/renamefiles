@@ -8,12 +8,11 @@ import (
 	"strconv"
 
 	kit "github.com/ysmood/gokit"
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 func main() {
-	app := kingpin.New("renamefiles", "if the target path doesn't exist it will be auto created")
-	app.Version("v0.0.7")
+	app := kit.TasksNew("renamefiles", "if the target path doesn't exist it will be auto created")
+	app.Version("v0.0.8")
 	logPath := app.Flag("file", "the path of the log file").Short('f').Default(".renamefiles.log").String()
 	noLog := app.Flag("no-log", "don't generate log file").Short('n').Bool()
 
@@ -22,7 +21,7 @@ func main() {
 			cmd.Default()
 
 			match := cmd.Flag("match", "glob pattern for files to rename").Short('m').Default("*").String()
-			regStr := cmd.Flag("key", "regex to match the sortable key of the names").Short('k').Default(`\d+`).String()
+			regStr := cmd.Flag("key", "regex to match the sortable key of the names").Short('k').Default(`\d+`).Regexp()
 			template := cmd.Flag("template", "template to move the files to").Short('t').Default("{{key}}{{ext}}").String()
 			prefix := cmd.Flag("prefix", "prefix to each name").Short('p').Default("").String()
 			yes := cmd.Flag("yes", "no confirmation").Bool()
@@ -62,9 +61,8 @@ type task struct {
 	To   string
 }
 
-func plan(match, regStr, template, prefix string) []task {
+func plan(match string, reg *regexp.Regexp, template, prefix string) []task {
 	list := kit.Walk(match).Sort().MustList()
-	reg := regexp.MustCompile(regStr)
 	tasks := []task{}
 	padLen := int64(math.Ceil(math.Log10(float64(len(list)))))
 
