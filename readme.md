@@ -26,3 +26,13 @@ renamefiles
 The tool will display a preview and ask if you want to apply the batch operation. Type `yes` and `enter` to proceed.
 
 A log file will be created, you can use it to revert batch operation in case mistakes.
+
+## Dev
+
+Release to github:
+
+```bash
+go get github.com/ysmood/gokit/cmd/godev
+
+godev build -d
+```
