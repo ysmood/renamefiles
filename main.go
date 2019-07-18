@@ -12,7 +12,7 @@ import (
 
 func main() {
 	app := kit.TasksNew("renamefiles", "if the target path doesn't exist it will be auto created")
-	app.Version("v0.0.8")
+	app.Version("v0.1.0")
 	logPath := app.Flag("file", "the path of the log file").Short('f').Default(".renamefiles.log").String()
 	noLog := app.Flag("no-log", "don't generate log file").Short('n').Bool()
 
@@ -22,12 +22,16 @@ func main() {
 
 			match := cmd.Flag("match", "glob pattern for files to rename").Short('m').Default("*").String()
 			regStr := cmd.Flag("key", "regex to match the sortable key of the names").Short('k').Default(`\d+`).Regexp()
-			template := cmd.Flag("template", "template to move the files to").Short('t').Default("{{key}}{{ext}}").String()
+			template := cmd.Flag(
+				"template",
+				"template to move the files to. Use function `index(start)` to reindex",
+			).Short('t').Default("{{key}}{{ext}}").String()
 			prefix := cmd.Flag("prefix", "prefix to each name").Short('p').Default("").String()
+			minPad := cmd.Flag("min-padding", "minimal zero padding for index").Default("2").Int64()
 			yes := cmd.Flag("yes", "no confirmation").Bool()
 
 			return func() {
-				tasks := plan(*match, *regStr, *template, *prefix)
+				tasks := plan(*match, *regStr, *template, *prefix, *minPad)
 
 				if len(tasks) == 0 {
 					fmt.Println("Nothing to rename")
@@ -58,13 +62,20 @@ func main() {
 
 type task struct {
 	From string
+	Tmp  string
 	To   string
 }
 
-func plan(match string, reg *regexp.Regexp, template, prefix string) []task {
+func plan(match string, reg *regexp.Regexp, template, prefix string, minPad int64) []task {
 	list := kit.Walk(match).Sort().MustList()
 	tasks := []task{}
 	padLen := int64(math.Ceil(math.Log10(float64(len(list)))))
+
+	if padLen < minPad {
+		padLen = minPad
+	}
+
+	indexFn := genIndexFn(padLen)
 
 	for _, p := range list {
 		m := reg.FindStringSubmatch(filepath.Base(p))
@@ -78,20 +89,45 @@ func plan(match string, reg *regexp.Regexp, template, prefix string) []task {
 			key = m[1]
 		}
 
-		index, _ := strconv.ParseInt(key, 10, 64)
-		key = fmt.Sprintf("%0"+strconv.FormatInt(padLen, 10)+"d", index)
+		index, err := strconv.ParseInt(key, 10, 64)
+		kit.E(err)
+		key = formatIndex(index, padLen)
 
-		to, _ := filepath.Abs(prefix + kit.S(template, "key", str(key), "ext", str(filepath.Ext(p))))
+		to, err := filepath.Abs(prefix + kit.S(template,
+			"key", str(key),
+			"ext", str(filepath.Ext(p)),
+			"index", indexFn,
+		))
+		kit.E(err)
 
-		abs, _ := filepath.Abs(".")
-		relFrom, _ := filepath.Rel(abs, p)
-		relTo, _ := filepath.Rel(abs, to)
+		abs, err := filepath.Abs(".")
+		kit.E(err)
+		relFrom, err := filepath.Rel(abs, p)
+		kit.E(err)
+		relTo, err := filepath.Rel(abs, to)
+		kit.E(err)
 
 		fmt.Println(relFrom, kit.C("->", "cyan"), relTo)
-		tasks = append(tasks, task{From: p, To: to})
+		tasks = append(tasks, task{From: p, Tmp: kit.RandString(16), To: to})
 	}
 
 	return tasks
+}
+
+func formatIndex(index, padLen int64) string {
+	return fmt.Sprintf("%0"+strconv.FormatInt(padLen, 10)+"d", index)
+}
+
+func genIndexFn(padLen int64) func(...int64) string {
+	index := int64(1)
+	return func(min ...int64) string {
+		if len(min) > 0 && index < min[0] {
+			index = min[0]
+		}
+		out := formatIndex(index, padLen)
+		index++
+		return out
+	}
 }
 
 func str(s string) func() string {
@@ -102,7 +138,10 @@ func str(s string) func() string {
 
 func move(tasks []task) {
 	for _, t := range tasks {
-		kit.E(kit.Move(t.From, t.To, nil))
+		kit.E(kit.Move(t.From, t.Tmp, nil))
+	}
+	for _, t := range tasks {
+		kit.E(kit.Move(t.Tmp, t.To, nil))
 	}
 }
 
