@@ -12,7 +12,7 @@ import (
 
 func main() {
 	app := kit.TasksNew("renamefiles", "if the target path doesn't exist it will be auto created")
-	app.Version("v0.1.0")
+	app.Version("v0.1.1")
 	logPath := app.Flag("file", "the path of the log file").Short('f').Default(".renamefiles.log").String()
 	noLog := app.Flag("no-log", "don't generate log file").Short('n').Bool()
 
@@ -21,7 +21,10 @@ func main() {
 			cmd.Default()
 
 			match := cmd.Flag("match", "glob pattern for files to rename").Short('m').Default("*").String()
-			regStr := cmd.Flag("key", "regex to match the sortable key of the names").Short('k').Default(`\d+`).Regexp()
+			regStr := cmd.Flag(
+				"key",
+				"regex to match the sortable key of the names, trap has priority",
+			).Short('k').Default(`\d+`).Regexp()
 			template := cmd.Flag(
 				"template",
 				"template to move the files to. Use function `index(start)` to reindex",
