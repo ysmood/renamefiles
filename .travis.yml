@@ -1,8 +1,8 @@
 language: go
 
 script:
-  - go get github.com/ysmood/gokit/cmd/godev
-  - godev build
+  - curl -L https://git.io/fjaxx | repo=ysmood/gokit bin=godev sh
+  - godev build --strict
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

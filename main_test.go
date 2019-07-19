@@ -1,6 +1,7 @@
-package main_test
+package main
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,27 +15,31 @@ func TestBasic(t *testing.T) {
 	_ = kit.OutputFile(p+"/test-02-a.txt", "", nil)
 	_ = kit.OutputFile(p+"/test-03-a.txt", "", nil)
 
-	kit.Exec(
-		"go", "run", ".",
+	os.Args = []string{
+		"",
 		"--yes",
-		"-f"+p+"/.log",
-		`-k-(\d+)-`, "-m"+p+"/*",
-		"-t"+p+"/ok-{{key}}.txt",
-	).MustDo()
+		"-f" + p + "/.log",
+		`-k-(\d+)-`, "-m" + p + "/*",
+		"-t" + p + "/ok-{{key}}.txt",
+	}
 
-	assert.True(t, kit.FileExists(p+"/ok-01.txt"))
-	assert.True(t, kit.FileExists(p+"/ok-02.txt"))
-	assert.True(t, kit.FileExists(p+"/ok-03.txt"))
+	main()
 
-	kit.Exec(
-		"go", "run", ".",
+	assert.FileExists(t, p+"/ok-01.txt")
+	assert.FileExists(t, p+"/ok-02.txt")
+	assert.FileExists(t, p+"/ok-03.txt")
+
+	os.Args = []string{
+		"",
 		"revert",
-		"-f"+p+"/.log",
-	).MustDo()
+		"-f" + p + "/.log",
+	}
 
-	assert.True(t, kit.FileExists(p+"/test-01-a.txt"))
-	assert.True(t, kit.FileExists(p+"/test-02-a.txt"))
-	assert.True(t, kit.FileExists(p+"/test-03-a.txt"))
+	main()
+
+	assert.FileExists(t, p+"/test-01-a.txt")
+	assert.FileExists(t, p+"/test-02-a.txt")
+	assert.FileExists(t, p+"/test-03-a.txt")
 }
 
 func TestNameShifting(t *testing.T) {
@@ -43,14 +48,37 @@ func TestNameShifting(t *testing.T) {
 	_ = kit.OutputFile(p+"/01", "", nil)
 	_ = kit.OutputFile(p+"/02", "", nil)
 
-	kit.Exec(
-		"go", "run", ".",
+	os.Args = []string{
+		"",
 		"--yes",
-		"-f"+p+"/.log",
-		"-m"+p+"/*",
-		"-t"+p+"/{{index 2}}",
-	).MustDo()
+		"-f" + p + "/.log",
+		"-m" + p + "/*",
+		"-t" + p + "/{{index 2}}",
+	}
 
-	assert.True(t, kit.FileExists(p+"/02"))
-	assert.True(t, kit.FileExists(p+"/03"))
+	main()
+
+	assert.FileExists(t, p+"/02")
+	assert.FileExists(t, p+"/03")
+}
+
+func TestNothingTodo(t *testing.T) {
+	os.Args = []string{
+		"",
+	}
+
+	main()
+}
+
+func TestPrompt(t *testing.T) {
+	p := "tmp/" + kit.RandString(16)
+
+	_ = kit.OutputFile(p+"/01", "", nil)
+
+	os.Args = []string{
+		"",
+		"-m", p + "/*",
+	}
+
+	main()
 }
