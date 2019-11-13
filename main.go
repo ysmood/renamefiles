@@ -12,7 +12,7 @@ import (
 
 func main() {
 	app := kit.TasksNew("renamefiles", "if the target path doesn't exist it will be auto created")
-	app.Version("v0.1.1")
+	app.Version("v0.2.0")
 	logPath := app.Flag("file", "the path of the log file").Short('f').Default(".renamefiles.log").String()
 	noLog := app.Flag("no-log", "don't generate log file").Short('n').Bool()
 
@@ -45,8 +45,9 @@ func main() {
 				if *yes {
 					confirm = "yes"
 				} else {
-					fmt.Println("Sure to rename: [no]/yes")
-					fmt.Scanln(&confirm)
+					fmt.Println("Sure to rename? Press enter to continue (CTRL-C to abort)")
+					fmt.Scanln()
+					confirm = "yes"
 				}
 				if confirm == "yes" {
 					move(tasks)
