@@ -6,7 +6,7 @@ A cli tool to safely batch rename files with sane defaults.
 
 ## Install
 
-Shell command `curl -L https://git.io/fjaxx | repo=ysmood/renamefiles bin=renamefiles sh`
+Shell command `curl -L https://git.io/fjaxx | repo=ysmood/renamefiles sh`
 
 or use golang:
 
