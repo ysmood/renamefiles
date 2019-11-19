@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	kit "github.com/ysmood/gokit"
+	"github.com/ysmood/kit"
 )
 
 func TestBasic(t *testing.T) {
@@ -42,6 +42,28 @@ func TestBasic(t *testing.T) {
 	assert.FileExists(t, p+"/test-03-a.txt")
 }
 
+func TestAutoPattern(t *testing.T) {
+	p := "tmp/" + kit.RandString(16)
+
+	_ = kit.OutputFile(p+"/01-01-a.txt", "", nil)
+	_ = kit.OutputFile(p+"/01-02-a.txt", "", nil)
+	_ = kit.OutputFile(p+"/01-03-a.txt", "", nil)
+
+	os.Args = []string{
+		"",
+		"--yes",
+		"--no-log",
+		"-m" + p + "/*",
+		"-t" + p + "/ok-{{key}}.txt",
+	}
+
+	main()
+
+	assert.FileExists(t, p+"/ok-01.txt")
+	assert.FileExists(t, p+"/ok-02.txt")
+	assert.FileExists(t, p+"/ok-03.txt")
+}
+
 func TestNameShifting(t *testing.T) {
 	p := "tmp/" + kit.RandString(16)
 
@@ -68,6 +90,13 @@ func TestNothingTodo(t *testing.T) {
 	}
 
 	main()
+
+	os.Args = []string{
+		"",
+		"--key=" + kit.RandString(16),
+	}
+
+	main()
 }
 
 func TestPrompt(t *testing.T) {
@@ -78,6 +107,7 @@ func TestPrompt(t *testing.T) {
 	os.Args = []string{
 		"",
 		"-m", p + "/*",
+		"-t" + p + "/{{key}}",
 	}
 
 	main()
