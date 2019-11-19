@@ -23,7 +23,7 @@ renamefiles --help-long
 renamefiles
 ```
 
-The tool will display a preview and ask if you want to apply the batch operation. Type `yes` and `enter` to proceed.
+The tool will display a preview and ask if you want to apply the batch operation.
 
 A log file will be created, you can use it to revert batch operation in case mistakes.
 
