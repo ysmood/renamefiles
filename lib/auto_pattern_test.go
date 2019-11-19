@@ -16,18 +16,18 @@ func TestSplit(t *testing.T) {
 func TestHistograms(t *testing.T) {
 	assert.Equal(t,
 		[]map[string]int{
-			map[string]int{"a": 6},                            // col1
-			map[string]int{"01": 1, "b": 3, "s": 1},           // col2
-			map[string]int{"01": 2, "02": 1, "03": 1, "b": 1}, // col3
+			{"a": 6},                            // col1
+			{"01": 1, "b": 3, "s": 1},           // col2
+			{"01": 2, "02": 1, "03": 1, "b": 1}, // col3
 		},
 		lib.Histograms([][]string{
 			//       col1 col2 col3
-			[]string{"a"},
-			[]string{"a", "b", "01"},
-			[]string{"a", "b", "02"},
-			[]string{"a", "b", "03"},
-			[]string{"a", "s", "01"},
-			[]string{"a", "01", "b"},
+			{"a"},
+			{"a", "b", "01"},
+			{"a", "b", "02"},
+			{"a", "b", "03"},
+			{"a", "s", "01"},
+			{"a", "01", "b"},
 		}),
 	)
 }
@@ -35,9 +35,9 @@ func TestHistograms(t *testing.T) {
 func TestFindIncrementalCol(t *testing.T) {
 	assert.Equal(t, 1,
 		lib.FindIndexCol([]map[string]int{
-			map[string]int{"01": 6},                           // col1
-			map[string]int{"02": 2, "01": 1, "03": 1, "b": 1}, // col2
-			map[string]int{"01": 1, "b": 3, "s": 1},           // col3
+			{"01": 6},                           // col1
+			{"02": 2, "01": 1, "03": 1, "b": 1}, // col2
+			{"01": 1, "b": 3, "s": 1},           // col3
 		}),
 	)
 }

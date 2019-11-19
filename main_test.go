@@ -48,6 +48,7 @@ func TestAutoPattern(t *testing.T) {
 	_ = kit.OutputFile(p+"/01-01-a.txt", "", nil)
 	_ = kit.OutputFile(p+"/01-02-a.txt", "", nil)
 	_ = kit.OutputFile(p+"/01-03-a.txt", "", nil)
+	_ = kit.OutputFile(p+"/a-01.txt", "", nil)
 
 	os.Args = []string{
 		"",
