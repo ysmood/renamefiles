@@ -7,27 +7,30 @@ import (
 	"regexp"
 	"strconv"
 
-	kit "github.com/ysmood/gokit"
+	"github.com/ysmood/kit"
+	"github.com/ysmood/renamefiles/lib"
 )
 
 func main() {
 	app := kit.TasksNew("renamefiles", "if the target path doesn't exist it will be auto created")
-	app.Version("v0.2.0")
+	app.Version("v0.3.0")
 	logPath := app.Flag("file", "the path of the log file").Short('f').Default(".renamefiles.log").String()
 	noLog := app.Flag("no-log", "don't generate log file").Short('n').Bool()
 
 	kit.Tasks().App(app).Add(
-		kit.Task("do", "rename").Init(func(cmd kit.TaskCmd) func() {
+		kit.Task("do", "use pattern to rename").Init(func(cmd kit.TaskCmd) func() {
 			cmd.Default()
 
 			match := cmd.Flag("match", "glob pattern for files to rename").Short('m').Default("*").String()
 			regStr := cmd.Flag(
 				"key",
-				"regex to match the sortable key of the names, trap has priority",
-			).Short('k').Default(`\d+`).Regexp()
+				"regex to match the sortable key of the names, trap has priority. "+
+					"By default, it will auto analyze files and generate a pattern.",
+			).Short('k').Regexp()
 			template := cmd.Flag(
 				"template",
-				"template to move the files to. Use function `index(start)` to reindex",
+				"template to move the files to. "+
+					"Use function `index` such as {{index 2}} to change the start index",
 			).Short('t').Default("{{key}}{{ext}}").String()
 			prefix := cmd.Flag("prefix", "prefix to each name").Short('p').Default("").String()
 			minPad := cmd.Flag("min-padding", "minimal zero padding for index").Default("2").Int64()
@@ -81,6 +84,14 @@ func plan(match string, reg *regexp.Regexp, template, prefix string, minPad int6
 
 	indexFn := genIndexFn(padLen)
 
+	if reg == nil {
+		reg = lib.AutoPattern(baseNames(list))
+	}
+
+	if reg.String() == "" {
+		return tasks
+	}
+
 	for _, p := range list {
 		m := reg.FindStringSubmatch(filepath.Base(p))
 
@@ -116,6 +127,14 @@ func plan(match string, reg *regexp.Regexp, template, prefix string, minPad int6
 	}
 
 	return tasks
+}
+
+func baseNames(list []string) []string {
+	names := []string{}
+	for _, p := range list {
+		names = append(names, filepath.Base(p))
+	}
+	return names
 }
 
 func formatIndex(index, padLen int64) string {
