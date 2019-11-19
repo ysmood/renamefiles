@@ -1,7 +1,7 @@
 language: go
 
 script:
-  - curl -L https://git.io/fjaxx | repo=ysmood/gokit bin=godev sh
+  - curl -L https://git.io/fjaxx | repo=ysmood/kit bin=godev sh
   - godev build --strict
 
 after_success:

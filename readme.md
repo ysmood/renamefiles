@@ -44,7 +44,7 @@ A log file will be created, you can use it to revert batch operation in case mis
 Release to github:
 
 ```bash
-go get github.com/ysmood/gokit/cmd/godev
+go get github.com/ysmood/kit/cmd/godev
 
 godev build -d
 ```
