@@ -14,6 +14,7 @@ var regWordSep = regexp.MustCompile(`\d+`)
 // 2. Analyze the histogram, use similar columns to create the regexp.
 func AutoPattern(list []string) *regexp.Regexp {
 	table := [][]string{}
+	halfHeight := len(list) / 2
 
 	for _, l := range list {
 		table = append(table, Split(l))
@@ -27,7 +28,10 @@ func AutoPattern(list []string) *regexp.Regexp {
 		if col == indexCol {
 			pattern += `(\d+)`
 		} else {
-			word, _ := FindWordForCol(histogram)
+			word, count := FindWordForCol(histogram)
+			if count < halfHeight {
+				continue
+			}
 			pattern += regexp.QuoteMeta(word)
 		}
 	}

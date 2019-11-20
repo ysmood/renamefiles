@@ -13,7 +13,7 @@ import (
 
 func main() {
 	app := kit.TasksNew("renamefiles", "if the target path doesn't exist it will be auto created")
-	app.Version("v0.3.0")
+	app.Version("v0.3.1")
 	logPath := app.Flag("file", "the path of the log file").Short('f').Default(".renamefiles.log").String()
 	noLog := app.Flag("no-log", "don't generate log file").Short('n').Bool()
 
@@ -91,6 +91,8 @@ func plan(match string, reg *regexp.Regexp, template, prefix string, minPad int6
 	if reg.String() == "" {
 		return tasks
 	}
+
+	fmt.Println("key patter:", kit.C(reg.String(), "cyan"))
 
 	for _, p := range list {
 		m := reg.FindStringSubmatch(filepath.Base(p))

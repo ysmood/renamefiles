@@ -48,6 +48,6 @@ func TestAutoPatternFunc(t *testing.T) {
 		"01-a-b-02.txt",
 		"01-a-b-03.txt",
 		"a",
-		"b",
+		"a1a2a3a4a5a6a7",
 	}).String())
 }
