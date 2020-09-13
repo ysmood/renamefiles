@@ -92,7 +92,7 @@ func plan(match string, reg *regexp.Regexp, template, prefix string, minPad int6
 		return tasks
 	}
 
-	fmt.Println("key patter:", kit.C(reg.String(), "cyan"))
+	fmt.Println("key pattern:", kit.C(reg.String(), "cyan"))
 
 	for _, p := range list {
 		m := reg.FindStringSubmatch(filepath.Base(p))
@@ -107,8 +107,9 @@ func plan(match string, reg *regexp.Regexp, template, prefix string, minPad int6
 		}
 
 		index, err := strconv.ParseInt(key, 10, 64)
-		kit.E(err)
-		key = formatIndex(index, padLen)
+		if err == nil {
+			key = formatIndex(index, padLen)
+		}
 
 		to, err := filepath.Abs(prefix + kit.S(template,
 			"key", str(key),
